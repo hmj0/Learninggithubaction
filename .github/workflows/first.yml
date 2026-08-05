@@ -1,5 +1,6 @@
 name: first_pipeline
-permission: read
+permissions:
+  contents: read
 
 on:
   push:
