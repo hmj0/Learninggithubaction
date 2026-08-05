@@ -19,8 +19,8 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-     # - name: recuperation du code
-     #   uses: actions/checkout@v4
+      - name: recuperation du code
+        uses: actions/checkout@v4
 
       - name: first message
         run: echo "hello world"
