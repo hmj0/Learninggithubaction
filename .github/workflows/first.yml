@@ -1,0 +1,14 @@
+name: first_pipeline
+permission: read
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  message:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: first message
+        run: echo "hello world"
