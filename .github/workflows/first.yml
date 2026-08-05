@@ -19,5 +19,13 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
+     # - name: recuperation du code
+     #   uses: actions/checkout@v4
+
       - name: first message
         run: echo "hello world"
+
+      - name: build de l'image
+        run: docker build -t mon-image .
+      - name: lanement du containers
+        run: docker run  mon-image
