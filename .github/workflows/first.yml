@@ -14,22 +14,37 @@ on:
   workflow_dispatch:
 
 jobs:
-  message:
+  authentification_and_push:
+    permissions:
+      id-token: write
+      contents: read
     timeout-minutes: 5
     runs-on: ubuntu-22.04
 
     steps:
-      - name: recuperation du code
+      - name: Recuperation du code
         uses: actions/checkout@v4
 
-      - name: first message
-        run: echo "hello world"
+      - name: Authentification de Github Actions A GCP
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: 'agentic-ai-learning-486e'
+          workload_identity_provider: 'projects/80844171008/locations/global/workloadIdentityPools/github-actions-hmj01-pool/providers/github-provider'
+          service_account: github-actions-sa@agentic-ai-learning-486e.iam.gserviceaccount.com
+      
+      - name: Setup gcloud SDK
+        uses: google-github-actions/setup-gcloud@v3
+      
+      - name: Authentifie Docker Aupres de Artifact Registry
+        run: gcloud auth configure-docker europe-west1-docker.pkg.dev
 
-      - name: build de l'image
-        run: docker build -t mon-image .
-      - name: lanement du containers
-        run: docker container run -d  --name mon-image   mon-image
-      - name: lister les containers actives
-        run: docker container ls -a | grep mon-image
-      - name: arret du container
-        run: docker container stop mon-image
+      - name: Taguer l'image selon la norme
+        run: docker image build . -t europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/nginx-demo:v1
+      
+      - name: Patarge L'Image Dans La Registry GCP
+        run: docker  push  europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/nginx-demo:v1
+      
+      - name: Check si l'image A Ete Cree
+        run: docker image ls | grep europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/nginx-demo:v1
+
+      
