@@ -12,12 +12,10 @@ on:
     paths-ignore:
       - '**/*.md'
   workflow_dispatch:
-    
-  
-
 
 jobs:
   message:
+    timeout-minutes: 5
     runs-on: ubuntu-22.04
 
     steps:
@@ -30,4 +28,8 @@ jobs:
       - name: build de l'image
         run: docker build -t mon-image .
       - name: lanement du containers
-        run: docker run  mon-image
+        run: docker container run -d  --name mon-image   mon-image
+      - name: lister les containers actives
+        run: docker container ls -a | grep mon-image
+      - name: arret du container
+        run: docker container stop mon-image
