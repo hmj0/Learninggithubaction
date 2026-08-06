@@ -28,7 +28,10 @@ jobs:
           project_id: 'agentic-ai-learning-486e'
           workload_identity_provider: 'projects/80844171008/locations/global/workloadIdentityPools/github-actions-hmj01-pool/providers/github-provider'
           service_account: github-actions-sa@agentic-ai-learning-486e.iam.gserviceaccount.com
-
+     
+      - name: Setup gcloud SDK
+        uses: google-github-actions/setup-gcloud@v3
+        
       - name: Authentifie Docker Aupres de Artifact Registry
         run: gcloud auth configure-docker europe-west1-docker.pkg.dev
 
@@ -40,9 +43,6 @@ jobs:
       
       - name: Check si l'image A Ete Cree
         run: docker image ls | grep europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/nginx-demo:v1
-
-      - name: Setup gcloud SDK
-        uses: google-github-actions/setup-gcloud@v3
 
       - name: Check si l'image est dans la registy GCP
         run: gcloud artifacts docker images list europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo | grep nginx-demo:v1
