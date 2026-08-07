@@ -55,4 +55,4 @@ jobs:
         run: gcloud artifacts docker images list europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo --include-tags | grep $IMAGE_TAG
       
       - name: Deploiement Du Container Dans GCP 
-        run: gcloud run deploy $CONTAINER_NAME --image=$IMAGE_NAME:$IMAGE_TAG  --region=europe-west1  --port=80
+        run: gcloud run deploy $CONTAINER_NAME --no-allow-unauthenticated --image=$IMAGE_NAME:$IMAGE_TAG  --region=europe-west1  --port=80
