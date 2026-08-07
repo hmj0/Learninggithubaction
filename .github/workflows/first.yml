@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Recuperation du code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Authentification de Github Actions A GCP
         uses: google-github-actions/auth@v3
@@ -52,7 +52,7 @@ jobs:
         run: docker image ls | grep $IMAGE_NAME
 
       - name: Check si l'image est dans la registy GCP
-        run: gcloud artifacts docker images list europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo | grep $IMAGE_TAG
+        run: gcloud artifacts docker images list europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo --include-tags | grep $IMAGE_TAG
       
       - name: Deploiement Du Container Dans GCP 
         run: gcloud run deploy $CONTAINER_NAME --image=$IMAGE_NAME:$IMAGE_TAG  --region=europe-west1  --port=80
