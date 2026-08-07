@@ -11,7 +11,7 @@ env:
 
   CONTAINER_NAME: nginx-test
 
-  RUNNER_NAME: ubuntu:latest
+  RUNNER_NAME: ubuntu-latest
 
 on:
   push:
