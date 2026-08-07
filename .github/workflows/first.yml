@@ -41,7 +41,7 @@ jobs:
 
             for i in {1..5}; do
 
-              if curl -f http://127.0.0.1; then
+              if curl -f http://127.0.0.1:8080; then
                 echo "Service disponible !"
                 exit 0
               fi
