@@ -31,19 +31,19 @@ jobs:
      
       - name: Setup gcloud SDK
         uses: google-github-actions/setup-gcloud@v3
-        
+
       - name: Authentifie Docker Aupres de Artifact Registry
         run: gcloud auth configure-docker europe-west1-docker.pkg.dev
 
       - name: Taguer l'image selon la norme
-        run: docker image build . -t europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/nginx-demo:v1
+        run: docker image build . -t europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/my-nginx:v1
       
       - name: Patarge L'Image Dans La Registry GCP
-        run: docker  push  europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/nginx-demo:v1
+        run: docker  push  europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/my-nginx:v1
       
       - name: Check si l'image A Ete Cree
-        run: docker image ls | grep europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/nginx-demo:v1
+        run: docker image ls | grep europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/my-nginx
 
       - name: Check si l'image est dans la registy GCP
-        run: gcloud artifacts docker images list europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo | grep nginx-demo:v1
+        run: gcloud artifacts docker images list europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo | grep my-nginx
         
