@@ -1,11 +1,17 @@
 name: first_pipeline
 
+
+permissions:
+  contents: read
+
 env:
   IMAGE_NAME: europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/my-nginx
       
   IMAGE_TAG: ${{github.sha}}
 
   CONTAINER_NAME: nginx-test
+
+  RUNNER_NAME: ubuntu:latest
 
 on:
   push:
@@ -19,11 +25,46 @@ on:
   workflow_dispatch:
 
 jobs:
+  test:
+    runs-on: $RUNNER_NAME
+    steps:
+      - name: Recuperation du code source
+        uses: actions/checkout@v5
+
+      - name: Build du Dockerfile
+        run: docker image build . -t mon-image
+      
+      - name: Lancement du container
+        run: docker container run -d -p 8080:80 --name $CONTAINER_NAME  mon-image
+      
+      - name: Attendre le demarrage
+        run: |
+
+            for i in {1..5}; do
+
+              if curl -f http://127.0.0.1; then
+                echo "Service disponible !"
+                exit 0
+              fi
+  
+              echo "Service pas encore disponible, nouvelle tentative..."
+              sleep 5
+            done
+            echo "Le service n'est pas disponible après 120 secondes"
+            exit 1
+
+      - name: Arrêter et supprimer le container
+        if: always()
+        run: |
+           docker container stop $CONTAINER_NAME || true
+           docker container rm $CONTAINER_NAME || true
+
+
   authentification_and_push:
+    needs: [test]
     permissions:
       id-token: write
-      contents: read
-    runs-on: ubuntu-22.04
+    runs-on: $RUNNER_NAME
 
     steps:
       - name: Recuperation du code
