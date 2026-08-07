@@ -1,5 +1,12 @@
 name: first_pipeline
 
+env:
+  IMAGE_NAME: europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/my-nginx
+      
+  IMAGE_TAG: ${{github.sha}}
+
+  CONTAINER_NAME: nginx-test
+
 on:
   push:
     branches: [main]
@@ -36,14 +43,16 @@ jobs:
         run: gcloud auth configure-docker europe-west1-docker.pkg.dev
 
       - name: Taguer l'image selon la norme
-        run: docker image build . -t europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/my-nginx:v1
+        run: docker image build . -t $IMAGE_NAME:$IMAGE_TAG
       
       - name: Patarge L'Image Dans La Registry GCP
-        run: docker  push  europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/my-nginx:v1
+        run: docker  push  $IMAGE_NAME:$IMAGE_TAG
       
       - name: Check si l'image A Ete Cree
-        run: docker image ls | grep europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/my-nginx
+        run: docker image ls | grep $IMAGE_NAME
 
       - name: Check si l'image est dans la registy GCP
-        run: gcloud artifacts docker images list europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo | grep my-nginx
-        
+        run: gcloud artifacts docker images list europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo | grep $IMAGE_TAG
+      
+      - name: Deploiement Du Container Dans GCP 
+        run: gcloud run deploy $CONTAINER_NAME --image=$IMAGE_NAME:$IMAGE_TAG  --region=europe-west1  --port=80
