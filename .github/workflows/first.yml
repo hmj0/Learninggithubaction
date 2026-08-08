@@ -1,9 +1,6 @@
 name: first_pipeline
 
 
-permissions:
-  contents: read
-
 env:
   IMAGE_NAME: europe-west1-docker.pkg.dev/agentic-ai-learning-486e/hmj01-repo/my-nginx
       
@@ -25,10 +22,12 @@ on:
 
 jobs:
   test:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Recuperation du code source
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
 
       - name: Build du Dockerfile
         run: docker image build . -t mon-image
@@ -49,7 +48,7 @@ jobs:
               echo "Service pas encore disponible, nouvelle tentative..."
               sleep 5
             done
-            echo "Le service n'est pas disponible après 120 secondes"
+            echo "Le service n'est pas disponible après 20 secondes"
             exit 1
 
       - name: Arrêter et supprimer le container
@@ -62,15 +61,16 @@ jobs:
   authentification_and_push:
     needs: [test]
     permissions:
+      contents: read
       id-token: write
     runs-on: ubuntu-latest
 
     steps:
       - name: Recuperation du code
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Authentification de Github Actions A GCP
-        uses: google-github-actions/auth@v3
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           project_id: 'agentic-ai-learning-486e'
           workload_identity_provider: 'projects/80844171008/locations/global/workloadIdentityPools/github-actions-hmj01-pool/providers/github-provider'
@@ -84,6 +84,16 @@ jobs:
 
       - name: Taguer l'image selon la norme
         run: docker image build . -t $IMAGE_NAME:$IMAGE_TAG
+
+      - name: Identifier les vulnerabilites
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 #v0.36.0
+        with:
+          image-ref: $IMAGE_NAME:$IMAGE_TAG
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
       
       - name: Patarge L'Image Dans La Registry GCP
         run: docker  push  $IMAGE_NAME:$IMAGE_TAG
